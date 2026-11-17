@@ -1,0 +1,94 @@
+@import "tailwindcss";
+@custom-variant dark (&:where(.dark, .dark *));
+
+@font-face {
+  font-family: 'KFGQPC Uthmanic Script HAFS';
+  src:
+    local('KFGQPC Uthmanic Script HAFS'),
+    local('KFGQPC Uthmanic Script HAFS Regular'),
+    url('https://cdn.jsdelivr.net/gh/mustafa0x/qpc-fonts@master/various-woff2/UthmanicHafs1%20Ver09.woff2') format('woff2'),
+    url('https://cdn.jsdelivr.net/gh/fawazahmed0/quran-api@1/fonts/uthmanic-hafs1-ver09.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Sakkal Majalla';
+  src:
+    local('Sakkal Majalla'),
+    local('SakkalMajalla'),
+    local('Sakkal Majalla Bold');
+  font-weight: 400 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@layer base {
+  :root {
+    --font-heading: 'Sakkal Majalla', 'Amiri', Georgia, serif;
+    --font-quran: 'KFGQPC Uthmanic Script HAFS', 'Amiri', serif;
+    --font-display: 'Amiri', Georgia, serif;
+    --font-sans: 'IBM Plex Sans Arabic', system-ui, -apple-system, sans-serif;
+  }
+
+  html {
+    font-family: var(--font-sans);
+    scroll-behavior: smooth;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  .font-heading {
+    font-family: var(--font-heading);
+  }
+
+  .font-quran {
+    font-family: var(--font-quran);
+    font-feature-settings: "liga" 1, "calt" 1, "kern" 1;
+  }
+
+  .font-matn {
+    font-family: var(--font-display);
+  }
+
+  .font-sharh {
+    font-family: var(--font-sans);
+  }
+}
+
+/* Tabular Arabic/Western numerals */
+.tabular-nums {
+  font-variant-numeric: tabular-nums;
+}
+
+/* Subtle custom scrollbar for archival sidebar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(120, 113, 108, 0.25);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(120, 113, 108, 0.45);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  * {
+    animation-duration: 0.001ms !important;
+    transition-duration: 0.001ms !important;
+  }
+}
