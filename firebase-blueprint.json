@@ -1,0 +1,122 @@
+{
+  "entities": {
+    "UserProfile": {
+      "title": "UserProfile",
+      "description": "Private user account profile storing the user's preferred Arabic display name and last active edition preference.",
+      "type": "object",
+      "properties": {
+        "uid": {
+          "type": "string",
+          "description": "Authenticated Firebase user UID matching the document ID.",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "displayName": {
+          "type": "string",
+          "description": "User-chosen Arabic display name shown as author of their study edition.",
+          "minLength": 1,
+          "maxLength": 80
+        },
+        "lastActiveEditionId": {
+          "type": "string",
+          "description": "Optional identifier of the last viewed edition (original or an author uid).",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Server timestamp when the user profile was created."
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Server timestamp when the user profile was last updated."
+        }
+      },
+      "required": ["uid", "displayName", "createdAt", "updatedAt"]
+    },
+    "StudyEdition": {
+      "title": "StudyEdition",
+      "description": "A user's personalized overlay edition of the Maarij al-Qabul study guide (edits, deletions, additions for Sharh and Question Bank) that can optionally be shared publicly.",
+      "type": "object",
+      "properties": {
+        "uid": {
+          "type": "string",
+          "description": "Owner user UID matching the document ID.",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "displayName": {
+          "type": "string",
+          "description": "Public author name displayed on this shared/personal edition.",
+          "minLength": 1,
+          "maxLength": 80
+        },
+        "bio": {
+          "type": "string",
+          "description": "Optional short description of this user's study edition.",
+          "maxLength": 200
+        },
+        "isPublic": {
+          "type": "boolean",
+          "description": "Whether this edition is visible for other learners to browse."
+        },
+        "revision": {
+          "type": "number",
+          "description": "Monotonically non-decreasing revision counter for offline sync tracking."
+        },
+        "topicOverrides": {
+          "type": "object",
+          "description": "Map keyed by topicId containing edits, deletions, and additions for topics, Matn, and Sharh sub-elements."
+        },
+        "questionOverrides": {
+          "type": "object",
+          "description": "Map keyed by questionId containing edits or soft-deletes for canonical Question Bank items."
+        },
+        "addedQuestions": {
+          "type": "array",
+          "description": "List of custom solved questions added by the user."
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Server timestamp when the edition was created."
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Server timestamp when the edition was last updated."
+        }
+      },
+      "required": [
+        "uid",
+        "displayName",
+        "isPublic",
+        "revision",
+        "topicOverrides",
+        "questionOverrides",
+        "addedQuestions",
+        "createdAt",
+        "updatedAt"
+      ]
+    }
+  },
+  "firestore": {
+    "/users/{uid}": {
+      "schema": {
+        "$ref": "#/entities/UserProfile"
+      },
+      "description": "Private user metadata document strictly accessible only by its owner."
+    },
+    "/editions/{uid}": {
+      "schema": {
+        "$ref": "#/entities/StudyEdition"
+      },
+      "description": "Per-user study guide overlay edition; writable only by owner and readable by owner or publicly when isPublic is true."
+    }
+  }
+}

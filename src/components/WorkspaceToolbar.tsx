@@ -1,4 +1,4 @@
-import { CheckCircle2, Layers, Moon, Palette, PanelRightOpen, Sun, Type } from 'lucide-react';
+import { CheckCircle2, Edit3, Layers, Moon, Palette, PanelRightOpen, Sun, Type } from 'lucide-react';
 import type { DisplayMode, SharhDetailLevel } from '../types/book';
 import { toArabicIndicDigits } from '../utils/studyHelpers';
 
@@ -17,6 +17,9 @@ interface WorkspaceToolbarProps {
   showTocToggle?: boolean;
   showReaderControls?: boolean;
   onOpenMobileToc?: () => void;
+  showEditToggle?: boolean;
+  editMode?: boolean;
+  onToggleEditMode?: () => void;
 }
 
 const MODE_OPTIONS: { id: DisplayMode; label: string }[] = [
@@ -45,6 +48,9 @@ export function WorkspaceToolbar({
   showTocToggle = false,
   showReaderControls = true,
   onOpenMobileToc,
+  showEditToggle = false,
+  editMode = false,
+  onToggleEditMode,
 }: WorkspaceToolbarProps) {
   return (
     <div className="mb-4 flex flex-wrap items-center justify-between gap-2.5 rounded-lg border border-[#E6DFD3] bg-[#FFFFFF] p-3 shadow-xs dark:border-[#2E2924] dark:bg-[#1D1A17]">
@@ -108,7 +114,7 @@ export function WorkspaceToolbar({
                       data-testid={`detail-${opt.id}`}
                       aria-pressed={active}
                       onClick={() => onDetailLevelChange(opt.id)}
-                      className={`whitespace-nowrap rounded px-2.5 py-1.5 text-xs font-semibold sm:text-sm ${
+                      className={`whitespace-nowrap rounded px-2.5 py-1.5 text-xs font-semibold sm:px-3 sm:text-sm ${
                         active
                           ? 'bg-[#8B5E34] text-[#FFFFFF] dark:bg-[#C48F5A] dark:text-[#141210]'
                           : 'text-[#5E584F] hover:text-[#1F1D1A] dark:text-[#A8A095] dark:hover:text-[#EFECE6]'
@@ -124,8 +130,25 @@ export function WorkspaceToolbar({
         )}
       </div>
 
-      {/* End Group: Color-Coding + Font Controls + Corrections + Theme */}
+      {/* End Group: Edit Mode + Color-Coding + Font Controls + Corrections + Theme */}
       <div className="flex flex-wrap items-center gap-2">
+        {showEditToggle && onToggleEditMode && (
+          <button
+            type="button"
+            data-testid="toggle-edit-mode-btn"
+            aria-pressed={editMode}
+            onClick={onToggleEditMode}
+            className={`inline-flex items-center gap-1.5 whitespace-nowrap rounded-md border px-3 py-1.5 text-xs font-bold sm:text-sm ${
+              editMode
+                ? 'border-[#8B5E34] bg-[#8B5E34] text-white dark:border-[#C48F5A] dark:bg-[#C48F5A] dark:text-[#141210]'
+                : 'border-[#D4C49A] bg-[#F5EFE0] text-[#8B5E34] hover:bg-[#EDE4CC] dark:border-[#443828] dark:bg-[#1E1A15] dark:text-[#C48F5A]'
+            }`}
+          >
+            <Edit3 className="h-3.5 w-3.5 shrink-0" aria-hidden="true" />
+            <span>{editMode ? 'وضع التحرير (نشط)' : 'وضع التحرير'}</span>
+          </button>
+        )}
+
         <button
           type="button"
           data-testid="toggle-color-coding"

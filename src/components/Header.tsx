@@ -1,13 +1,19 @@
 import { useState } from 'react';
-import { BookOpen, Menu, Search, X } from 'lucide-react';
+import { BookOpen, Menu, Search, User as UserIcon, X } from 'lucide-react';
 import type { ActiveTab } from '../types/book';
+import type { EditionViewMode } from '../types/edition';
 import { toArabicIndicDigits } from '../utils/studyHelpers';
+import { PWAInstallButton } from './PWAInstallButton';
 
 interface HeaderProps {
   activeTab: ActiveTab;
   onTabChange: (tab: ActiveTab) => void;
   onOpenSearch: () => void;
+  onOpenAccount: () => void;
   bookmarksCount: number;
+  viewMode: EditionViewMode;
+  authorDisplayName: string;
+  isSignedIn: boolean;
 }
 
 const NAV_ITEMS: { id: ActiveTab; label: string }[] = [
@@ -23,25 +29,38 @@ export function Header({
   activeTab,
   onTabChange,
   onOpenSearch,
+  onOpenAccount,
   bookmarksCount,
+  viewMode,
+  authorDisplayName,
+  isSignedIn,
 }: HeaderProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
+  const accountButtonLabel =
+    viewMode.kind === 'shared'
+      ? `نسخة: ${viewMode.displayName}`
+      : viewMode.kind === 'mine'
+        ? `نسختي: ${authorDisplayName}`
+        : isSignedIn
+          ? authorDisplayName
+          : 'حسابي والنسخ';
+
   return (
     <header className="sticky top-0 z-40 border-b border-[#E6DFD3] bg-[#FAF7F2]/95 backdrop-blur-sm dark:border-[#2E2924] dark:bg-[#141210]/95">
-      <div className="mx-auto flex h-16 max-w-7xl items-center justify-between gap-3 px-4 sm:px-6 lg:px-8">
+      <div className="mx-auto flex h-16 max-w-7xl items-center justify-between gap-2 px-4 sm:px-6 lg:px-8">
         {/* Zone 1: Brand Wordmark */}
-        <div className="flex items-center gap-3 shrink-0">
+        <div className="flex min-w-0 items-center gap-2 sm:gap-3">
           <button
             type="button"
             onClick={() => onTabChange('reader')}
-            className="flex items-center gap-2.5 text-right focus:outline-none focus-visible:ring-2 focus-visible:ring-[#1B4D3E]"
+            className="flex min-w-0 items-center gap-2 text-right focus:outline-none focus-visible:ring-2 focus-visible:ring-[#1B4D3E] sm:gap-2.5"
           >
-            <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-md border border-[#D4C49A] bg-[#F5EFE0] text-[#1B4D3E] dark:border-[#443828] dark:bg-[#1E1A15] dark:text-[#4BA388]">
-              <BookOpen className="h-5 w-5" aria-hidden="true" />
+            <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md border border-[#D4C49A] bg-[#F5EFE0] text-[#1B4D3E] sm:h-9 sm:w-9 dark:border-[#443828] dark:bg-[#1E1A15] dark:text-[#4BA388]">
+              <BookOpen className="h-4 w-4 sm:h-5 sm:w-5" aria-hidden="true" />
             </span>
-            <span className="flex flex-col">
-              <span className="font-heading text-2xl font-bold leading-tight text-[#1F1D1A] dark:text-[#EFECE6]">
+            <span className="flex min-w-0 flex-col">
+              <span className="truncate font-heading text-xl font-bold leading-tight text-[#1F1D1A] sm:text-2xl dark:text-[#EFECE6]">
                 معارج القبول
               </span>
               <span className="hidden text-[11px] text-[#5E584F] xl:block dark:text-[#A8A095]">
@@ -54,7 +73,7 @@ export function Header({
         {/* Zone 2: Desktop Navigation */}
         <nav
           aria-label="التنقل الرئيسي"
-          className="hidden items-center gap-4 lg:flex xl:gap-6"
+          className="hidden items-center gap-3 lg:flex xl:gap-5"
         >
           {NAV_ITEMS.map((item) => {
             const isActive = activeTab === item.id;
@@ -84,17 +103,32 @@ export function Header({
           })}
         </nav>
 
-        {/* Zone 3: Search Action + Mobile Drawer Toggle */}
-        <div className="flex items-center gap-2 shrink-0">
+        {/* Zone 3: PWA Install + Account + Search + Mobile Drawer */}
+        <div className="flex shrink-0 items-center gap-1.5 sm:gap-2">
+          <div className="hidden sm:block">
+            <PWAInstallButton />
+          </div>
+
+          <button
+            type="button"
+            onClick={onOpenAccount}
+            data-testid="open-account-btn"
+            className="flex max-w-[112px] items-center gap-1.5 truncate whitespace-nowrap rounded-md border border-[#D4C49A] bg-[#F5EFE0] px-2 py-1.5 text-xs font-bold text-[#8B5E34] hover:bg-[#EDE4CC] sm:max-w-[180px] sm:px-2.5 sm:py-2 sm:text-sm dark:border-[#443828] dark:bg-[#1E1A15] dark:text-[#C48F5A]"
+            aria-label="حسابي وتبديل النسخ"
+          >
+            <UserIcon className="h-3.5 w-3.5 shrink-0 sm:h-4 sm:w-4" aria-hidden="true" />
+            <span className="truncate">{accountButtonLabel}</span>
+          </button>
+
           <button
             type="button"
             onClick={onOpenSearch}
             data-testid="open-search-btn"
-            className="flex items-center gap-2 whitespace-nowrap rounded-md border border-[#E6DFD3] bg-[#FFFFFF] px-3 py-2 text-sm font-medium text-[#1F1D1A] hover:border-[#8B5E34] hover:text-[#1B4D3E] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#1B4D3E] dark:border-[#2E2924] dark:bg-[#1D1A17] dark:text-[#EFECE6] dark:hover:border-[#C48F5A] dark:hover:text-[#4BA388]"
+            className="flex items-center gap-1.5 whitespace-nowrap rounded-md border border-[#E6DFD3] bg-[#FFFFFF] px-2.5 py-2 text-xs font-medium text-[#1F1D1A] hover:border-[#8B5E34] hover:text-[#1B4D3E] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#1B4D3E] sm:px-3 sm:text-sm dark:border-[#2E2924] dark:bg-[#1D1A17] dark:text-[#EFECE6] dark:hover:border-[#C48F5A] dark:hover:text-[#4BA388]"
             aria-label="بحث سريع في المتن والشرح والأدلة"
           >
             <Search className="h-4 w-4 shrink-0" aria-hidden="true" />
-            <span>بحث سريع</span>
+            <span className="hidden sm:inline">بحث سريع</span>
           </button>
 
           <button
@@ -147,6 +181,9 @@ export function Header({
                 </button>
               );
             })}
+          </div>
+          <div className="mt-2.5 flex justify-end border-t border-[#E6DFD3] pt-2.5 sm:hidden dark:border-[#2E2924]">
+            <PWAInstallButton />
           </div>
         </nav>
       )}
